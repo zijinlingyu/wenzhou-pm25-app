@@ -91,8 +91,46 @@ def load_historical_data():
         df['季度'] = df['日期'].dt.quarter
         return df
     except Exception as e:
-        st.warning(f"加载历史数据失败: {str(e)}")
-        return None
+        st.warning(f"加载历史数据失败，使用模拟数据: {str(e)}")
+        stations = ['鹿城站', '龙湾站', '瓯海站', '瑞安站', '乐清站', '永嘉站', '洞头站', '平阳站', '苍南站', '泰顺站']
+        coords = {
+            '鹿城站': (120.65, 28.01), '龙湾站': (120.75, 27.95), '瓯海站': (120.60, 27.98),
+            '瑞安站': (120.62, 27.80), '乐清站': (120.95, 28.15), '永嘉站': (120.80, 28.25),
+            '洞头站': (121.10, 27.85), '平阳站': (120.50, 27.65), '苍南站': (120.35, 27.50),
+            '泰顺站': (119.75, 27.68)
+        }
+        dates = pd.date_range('2024-01-01', '2024-12-31', freq='D')
+        data = []
+        for date in dates:
+            for station in stations:
+                pm25 = np.random.randint(25, 75)
+                pm10 = pm25 + np.random.randint(15, 30)
+                so2 = np.random.randint(5, 20)
+                no2 = np.random.randint(20, 50)
+                co = round(np.random.uniform(0.5, 1.5), 2)
+                o3 = np.random.randint(30, 80)
+                if pm25 <= 35:
+                    aqi = np.random.randint(0, 50)
+                    level = '优'
+                elif pm25 <= 75:
+                    aqi = np.random.randint(51, 100)
+                    level = '良'
+                elif pm25 <= 115:
+                    aqi = np.random.randint(101, 150)
+                    level = '轻度污染'
+                else:
+                    aqi = np.random.randint(151, 200)
+                    level = '中度污染'
+                lon, lat = coords[station]
+                data.append({
+                    '日期': date, '站点': station, 'PM2.5': pm25, 'PM10': pm10,
+                    'SO2': so2, 'NO2': no2, 'CO': co, 'O3': o3, 'AQI': aqi,
+                    '质量等级': level, '经度': lon, '纬度': lat
+                })
+        df = pd.DataFrame(data)
+        df['月份'] = df['日期'].dt.month
+        df['季度'] = df['日期'].dt.quarter
+        return df
 
 def main():
     st.title('🌍 温州市城市空气质量 PM2.5 时空可视化分析')
