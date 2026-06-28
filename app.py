@@ -82,7 +82,6 @@ def fetch_realtime_data():
         st.error(f"获取实时数据失败: {str(e)}")
         return None, None
 
-@st.cache_data
 def load_historical_data():
     try:
         df = pd.read_csv('../data/pm25_data.csv')
